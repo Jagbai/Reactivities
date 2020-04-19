@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Application.Activities;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,15 +30,17 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(option =>
-                option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                option.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-                services.AddCors(opt => 
+            services.AddCors(opt =>
+        {
+            opt.AddPolicy("CorsPolicy", policy =>
             {
-                opt.AddPolicy("CorsPolicy", policy => 
-                {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
-                });
+                policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
             });
+        });
+            //Mediator requires the knowledge of our assembly
+            services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddControllers();
         }
 
@@ -50,11 +54,11 @@ namespace API
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();           
-            
+            app.UseRouting();
+
 
             app.UseAuthorization();
-            
+
             app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
@@ -62,7 +66,7 @@ namespace API
                 endpoints.MapControllers();
             });
 
-            
+
 
 
         }
