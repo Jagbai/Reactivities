@@ -9,10 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [Route("api/[controller]")]
+    //Route is api/controller name "Activities"Controller
     [ApiController]
+    //API controller so it knows
 
-    //Deriving from controller base because we're using React for our views
+
     public class ActivitiesController : ControllerBase
+    //Deriving from controller base because we're using React for our views
     {
         private readonly IMediator _mediator;
 
@@ -22,9 +25,13 @@ namespace API.Controllers
         }
 
         [HttpGet]
+        //GET Endpoint
         public async Task<ActionResult<List<Activity>>> List()
+        /*always async Task action result but we need to specify what we're returning which is 
+        A list of activities*/
         {
             return await _mediator.Send(new List.Query());
+            //We use mediator.Send to send a message to our API
         }
 
         [HttpGet("{id}")]
